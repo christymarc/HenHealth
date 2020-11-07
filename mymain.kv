@@ -1,0 +1,392 @@
+#:kivy 1.9.0
+WindowManager:
+    Welcome:
+    Create:
+    Login:
+    Menu:
+    Interaction:
+    Evaluation:
+    Alert:
+
+<Welcome>
+    name: "welcome"
+    GridLayout:
+        cols: 1
+        size: root.width, root.height
+        Button:
+            text: "Welcome to HenHealth!\n\nClick Anywhere To Begin"
+            on_release: 
+                app.root.current = "create"
+                root.manager.transition.direction = "left"
+
+            
+<Create>
+    name: "create"
+    firstname: firstname
+    lastname: lastname
+    phone: phone
+    username: username
+    password: password
+    passwordCheck: passwordCheck
+
+    GridLayout:
+        cols: 1
+        size: root.width, root.height
+
+        GridLayout:
+            cols:2
+
+            Label:
+                text: "Firstname: "
+            TextInput:
+                id: firstname
+                multiline:False
+            Label:
+                text: "Lastname: "
+            TextInput:
+                id: lastname
+                multiline:False
+            Label:
+                text: "Phone Number: "
+            TextInput:
+                id: phone
+                multiline:False
+            Label:
+                text: "Username: "
+            TextInput:
+                id: username
+                multiline:False
+            Label:
+                text: "Password: "
+            TextInput:
+                id: password
+                multiline:False
+            Label:
+                text: "Confirm Password: "
+            TextInput:
+                id: passwordCheck
+                multiline:False
+        
+        Button:
+            text: "Already have an account? Click here."
+            background_color: .2,.4,.5
+            size_hint: .1,.3
+            on_release: app.root.current = "login"
+
+        Button:
+            text: "Submit"
+            background_color: .2,.4,.5
+            size_hint: .2,.4
+            on_release: root.submit()
+
+<Login>
+    name: "login"
+    username: username
+    password: password
+
+    GridLayout:
+        cols: 1
+        size: root.width, root.height
+
+        GridLayout:
+            cols:2
+            Label:
+                text: "Username: "
+            TextInput:
+                id: username
+                multiline:False
+            Label:
+                text: "Password: "
+            TextInput:
+                id: password
+                multiline:False
+
+        Button:
+            text: "Submit"
+            background_color: .2,.4,.5
+            size_hint: .2,.4
+            on_release: app.root.current = "menu"
+
+<Menu>
+    name: "menu"
+    GridLayout:
+        cols: 1
+        size: root.width, root.height
+        Button:
+            text: "Log a New Interaction"
+            background_color: .2,.4,.5
+            size_hint: .2,.4
+            on_release: 
+                app.root.current = "interaction"
+                root.manager.transition.direction = "left"
+        Button:
+            text: "Wellness Evaluation"
+            background_color: .2,.4,.5
+            size_hint: .2,.4
+            on_release: 
+                app.root.current = "evaluation"
+                root.manager.transition.direction = "left"
+        Button:
+            text: "Alert Friends"
+            background_color: .2,.4,.5
+            size_hint: .2,.4
+            on_release: 
+                app.root.current = "alert"
+                root.manager.transition.direction = "left"
+        Button:
+            text: "Logout"
+            background_color: .2,.4,.5
+            size_hint: .2,.4
+            on_release: 
+                app.root.current = "welcome"
+                root.manager.transition.direction = "right"
+
+<Interaction>
+    name: "interaction"
+    user1: user1
+    user2: user2
+    user3: user3
+    user4: user4
+    user5: user5
+
+    GridLayout:
+        cols: 1
+        size: root.width, root.height
+
+        GridLayout:
+            cols:2
+
+            Label:
+                text: "Username of Friend 1: "
+            TextInput:
+                id: user1
+                multiline:False
+            Label:
+                text: "Username of Friend 2: "
+            TextInput:
+                id: user2
+                multiline:False
+            Label:
+                text: "Username of Friend 3: "
+            TextInput:
+                id: user3
+                multiline:False
+            Label:
+                text: "Username of Friend 4: "
+            TextInput:
+                id: user4
+                multiline:False
+            Label:
+                text: "Username of Friend 5: "
+            TextInput:
+                id: user5
+                multiline:False
+
+        Button:
+            text: "Submit"
+            background_color: .2,.4,.5
+            size_hint: .2,.4
+            on_release: root.btn()
+
+        Button:
+            text: "Back to Menu"
+            background_color: .2,.4,.5
+            size_hint: .1,.3
+            on_release: 
+                app.root.current = "menu"
+                root.manager.transition.direction = "right"
+
+
+<Evaluation>
+    name: "evaluation"
+	GridLayout:
+		cols: 3
+        size: root.width, root.height
+        Label:
+            text: 'Do you have a fever?'
+            font_size: 10
+		Button:
+			text: 'Yes'
+            on_release: root.submit()
+		Button:
+			text: 'No'
+        Label:
+            text: 'Do you have a dry cough'
+            font_size: 10
+		Button:
+			text: 'Yes'
+            on_release: root.submit()
+		Button:
+			text: 'No'
+        Label:
+            text: 'Are you experiencing fatigue?'
+            font_size: 10
+		Button:
+			text: 'Yes'
+            on_release: root.submit()
+		Button:
+			text: 'No'
+        Label:
+            text: 'Are you coughing up thick phlegm from the lungs?'
+            font_size: 10
+		Button:
+			text: 'Yes'
+            on_release: root.submit()
+		Button:
+			text: 'No'
+        Label:
+            text: 'Do you have shortness of breadth?'
+            font_size: 10
+		Button:
+			text: 'Yes'
+            on_release: root.submit()
+		Button:
+			text: 'No'
+        Label:
+            text: 'Do you have Bone or joint pain?'
+            font_size: 10
+		Button:
+			text: 'Yes'
+            on_release: root.submit()
+		Button:
+			text: 'No'
+        Label:
+            text: 'Do you have a sore throat?'
+            font_size: 10
+		Button:
+			text: 'Yes'
+            on_release: root.submit()
+		Button:
+			text: 'No'
+        Label:
+            text: 'Do you have a headace?'
+            font_size: 10
+		Button:
+			text: 'Yes'
+            on_release: root.submit()
+		Button:
+			text: 'No'
+        Label:
+            text: 'Do you have chills?'
+            font_size: 10
+		Button:
+			text: 'Yes'
+            on_release: root.submit()
+		Button:
+			text: 'No'
+        Label:
+            text: 'Are you experiencing nausea or vomiting?'
+            font_size: 10
+		Button:
+			text: 'Yes'
+            on_release: root.submit()
+		Button:
+			text: 'No'
+
+        Button:
+            text: "Back to Menu"
+            background_color: .2,.4,.5
+            size_hint: .1,.3
+            on_release: 
+                app.root.current = "menu"
+                root.manager.transition.direction = "right"
+
+
+<Alert>
+    name: "alert"
+    GridLayout:
+        cols: 1
+        size: root.width, root.height
+        
+        Label:
+            text: "If you have tested positive for COVID-19, \n press this button to alert all the users\n you have been in contact with in the past 2 weeks."
+        
+        Button:
+            text: "Alert Friends"
+            background_color: 1,0,0
+            size_hint: .1,.3
+            on_release: root.redbtn()
+
+        Button:
+            text: "Back to Menu"
+            background_color: .2,.4,.5
+            size_hint: .1,.3
+            on_release: 
+                app.root.current = "menu"
+                root.manager.transition.direction = "right"
+
+<Invalid>
+    Label:
+        text: "Invalid Login! Try Again"
+        size_hint: .6, .2
+        pos_hint: {"x": .2, "top": 1}
+
+    Button:
+        text: "OK"
+        size_hint: .3, .1
+        pos_hint: {"x": .35, "top": .4}
+
+<Success>
+    Label:
+        text: "Action Successful"
+        size_hint: .6, .2
+        pos_hint: {"x": .2, "top": 1}
+
+    Button:
+        text: "OK"
+        size_hint: .3, .1
+        pos_hint: {"x": .35, "top": .4}
+
+<UserTaken>
+    Label:
+        text: "That username is already in use.\nPlease try another."
+        size_hint: .6, .2
+        pos_hint: {"x": .2, "top": 1}
+
+    Button:
+        text: "OK"
+        size_hint: .3, .1
+        pos_hint: {"x": .35, "top": .4}
+
+<NumInvalid>
+    Label:
+        text: "That phone number is already in use or it is invalid.\nDo you already have an account?\nIf not please ensure the number inputted is correct."
+        size_hint: .6, .2
+        pos_hint: {"x": .2, "top": 1}
+
+    Button:
+        text: "OK"
+        size_hint: .3, .1
+        pos_hint: {"x": .35, "top": .4}
+
+<PassMatch>
+    Label:
+        text: "The passwords inputted do not match.\nPlease ensure that they match."
+        size_hint: .6, .2
+        pos_hint: {"x": .2, "top": 1}
+
+    Button:
+        text: "OK"
+        size_hint: .3, .1
+        pos_hint: {"x": .35, "top": .4}
+
+<EmptyInput>
+    Label:
+        text: "You left required spaces blank.\nPlease make sure to input a username, phone number, and password."
+        size_hint: .6, .2
+        pos_hint: {"x": .2, "top": 1}
+
+    Button:
+        text: "OK"
+        size_hint: .3, .1
+        pos_hint: {"x": .35, "top": .4}
+<covidEval>
+    Label:
+        text: "You should get tested for Covid-19"
+        size_hint: .6, .2
+        pos_hint: {"x": .2, "top": 1}
+    
+    Button:
+        text: "OK"
+        size_hint: .3, .1
+        pos_hint: {"x": .35, "top": .4}
