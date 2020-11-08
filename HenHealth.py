@@ -14,25 +14,14 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 import sqlite3
 from sqlite3 import Error
-#from kivy.uix.video import VideoPlayer
 # import mysql.connector
 from kivy.properties import StringProperty
 import pandas as pd
 import numpy as np
 from database import *
 
-# image of cecil and colors of blue and orange
-# https://ih1.redbubble.net/image.752005083.1066/st,small,507x507-pad,600x600,f8f8f8.u4.jpg
-# ripped cecil  
-# aimg = AsyncImage(source='http://mywebsite.com/logo.png')
-
 class Welcome(Screen):
-    def img(self):
-        welcome = Welcome(direction='right')
-        img = AsyncImage(source = 'https://ih1.redbubble.net/image.752005083.1066/st,small,507x507-pad,600x600,f8f8f8.u4.jpg')
-        img.pos = (300,300)
-        welcome.add_widget(img)
-        return img
+    pass
 
 class Create(Screen):
 
@@ -44,7 +33,7 @@ class Create(Screen):
     passwordCheck = ObjectProperty(None)
     
     def submit(self):
-        """make this def check password congruency, ensure password meets at least word count,
+        """make this function check password congruency, ensure necessary spaces are filled in,
         and username/phone number isn't already in use"""
         firstname = self.firstname.text
         lastname = self.lastname.text
@@ -58,9 +47,12 @@ class Create(Screen):
                 if (username not in row['username']):
                     if (phoneNum not in row['phonenumber']) and (len(phoneNum) == 10) and phoneNum.isdigit(): 
                         if (password == passwordCheck):
-                            df = pd.DataFrame([username, password, firstname, lastname, phoneNum], columns = ['username','password','firstname','lastname','phonenumber'])
-                            df_main.append(df, ignore_index=True)
-                            print(df_main)
+                            #update_main(username, password, firstname, lastname, phoneNum)
+                            """df_main.loc[len(df_main), 'firstname'] = firstname
+                            df_main.loc[len(df_main)-1, 'lastname'] = lastname
+                            df_main.loc[len(df_main)-1, 'phonenumber'] = phoneNum
+                            df_main.loc[len(df_main)-1, 'username'] = username
+                            df_main.loc[len(df_main)-1, 'password'] = password"""
                             self.reset()
                         else:
                             pass_match()
@@ -102,16 +94,44 @@ class Login(Screen):
         self.username.text = ""
         self.password.text = ""
 
+
 class Menu(Screen):
     pass
 
+
 class Interaction(Screen):
+    """logs all users inputted into database of 
+    users listed in the last two weeks with time
+    of submit"""
+
+    username = ObjectProperty(None)
+    user1 = ObjectProperty(None)
+    user2 = ObjectProperty(None)
+    user3 = ObjectProperty(None)
+    user4 = ObjectProperty(None)
+    user5 = ObjectProperty(None)
+
     def btn(self):
         show_success()
-        """logs all users inputted into database of 
-        users listed in the last two weeks with date
-        of submit"""
-    pass
+        username = self.username.text
+        user1 = self.user1.text
+        user2 = self.user2.text
+        user3 = self.user3.text
+        user4 = self.user4.text
+        user5 = self.user5.text
+        userlist = [user1, user2, user3, user4, user5]
+        for user in userlist:
+            df_user.loc[len(df_user), 'username'] = username
+            df_user.loc[len(df_user)-1, 'contact'] = user
+            df_user.loc[len(df_user)-1, 'time'] = 0
+        self.reset()
+    
+    def reset(self):
+        self.user1.text = ""
+        self.user2.text = ""
+        self.user3.text = ""
+        self.user4.text = ""
+        self.user5.text = ""
 
 class Evaluation(Screen):
     def submit(self):
@@ -128,7 +148,6 @@ class Alert(Screen):
                 for index, row in df_main.iterrows():
                     if contact == row['username']:
                         send_text(df_main.loc[index, 'phonenumber'])
-
 
 class WindowManager(ScreenManager):
     pass

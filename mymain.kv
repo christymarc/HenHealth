@@ -151,6 +151,7 @@ WindowManager:
 
 <Interaction>
     name: "interaction"
+    username: username
     user1: user1
     user2: user2
     user3: user3
@@ -164,6 +165,11 @@ WindowManager:
         GridLayout:
             cols:2
 
+            Label:
+                text: "Your Username: "
+            TextInput:
+                id: username
+                multiline:False
             Label:
                 text: "Username of Friend 1: "
             TextInput:
