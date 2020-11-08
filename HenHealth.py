@@ -11,23 +11,38 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.boxlayout import BoxLayout
 import sqlite3
 from sqlite3 import Error
+#from kivy.uix.video import VideoPlayer
 # import mysql.connector
 from kivy.properties import StringProperty
 import pandas as pd
+import numpy as np
+from database import *
+
+# image of cecil and colors of blue and orange
+# https://ih1.redbubble.net/image.752005083.1066/st,small,507x507-pad,600x600,f8f8f8.u4.jpg
+# ripped cecil  
+# aimg = AsyncImage(source='http://mywebsite.com/logo.png')
 
 class Welcome(Screen):
-    pass
+    def img(self):
+        welcome = Welcome(direction='right')
+        img = AsyncImage(source = 'https://ih1.redbubble.net/image.752005083.1066/st,small,507x507-pad,600x600,f8f8f8.u4.jpg')
+        img.pos = (300,300)
+        welcome.add_widget(img)
+        return img
 
 class Create(Screen):
+
     firstname = ObjectProperty(None)
     lastname = ObjectProperty(None)
     phone = ObjectProperty(None)
     username = ObjectProperty(None)
     password = ObjectProperty(None)
     passwordCheck = ObjectProperty(None)
-
+    
     def submit(self):
         """make this def check password congruency, ensure password meets at least word count,
         and username/phone number isn't already in use"""
@@ -38,24 +53,24 @@ class Create(Screen):
         password = self.password.text
         passwordCheck = self.passwordCheck.text
 
-        """
         if (phoneNum != "") and (username != "") and (password != ""):
-            if (username not in <db.username>)
-                if (phoneNum not in <db.phoneNumber>) and (len(phoneNum) == 10): 
-                    if (password == passwordCheck):
-                        db.add_user(firstname, lastname, phoneNum, email, username, password)
-
-                        self.reset()
-                        sm.current = "login"
+            for index, row in df_main.iterrows():
+                if (username not in row['username']):
+                    if (phoneNum not in row['phonenumber']) and (len(phoneNum) == 10) and phoneNum.isdigit(): 
+                        if (password == passwordCheck):
+                            df = pd.DataFrame([username, password, firstname, lastname, phoneNum], columns = ['username','password','firstname','lastname','phonenumber'])
+                            df_main.append(df, ignore_index=True)
+                            print(df_main)
+                            self.reset()
+                        else:
+                            pass_match()
                     else:
-                        pass_match()
+                        num_invalid()
                 else:
-                    num_invalid()
-            else:
-                user_taken()
+                    user_taken()
         else:
-            empty_Input()
-
+            empty_input()
+    
     def reset(self):
         self.firstname.text = ""
         self.lastname.text = ""
@@ -63,30 +78,29 @@ class Create(Screen):
         self.username.text = ""
         self.password.text = ""
         self.passwordCheck.text = ""
-        """
-    
-        pass
 
 
 class Login(Screen):
+    
     username = ObjectProperty(None)
     password = ObjectProperty(None)
-    pass
-    def logbtn(self):
+
+    def submit(self):
         username = self.username.text
         password = self.password.text
-        """
-        if db.validate(username, password):
-            self.reset()
-            sm.current = "main"
-        else:
-            show_invalid()
-
+        for index, row in df_main.iterrows():
+            if username == row['username']:
+                if df_main.loc[index, 'password']:
+                    #lets you go to menu
+                    self.reset()
+                else:
+                    show_invalid()
+            else:
+                show_invalid()
+    
     def reset(self):
         self.username.text = ""
         self.password.text = ""
-        """
-        pass
 
 class Menu(Screen):
     pass
@@ -100,111 +114,115 @@ class Interaction(Screen):
     pass
 
 class Evaluation(Screen):
-
     def submit(self):
         show_covid_message()
 
 class Alert(Screen):
+    username = ObjectProperty(None)
     def redbtn(self):
         show_success()
-        """
-        
-        """
-    pass
+        username = self.username.text
+        for index, row in df_user.iterrows():
+            if username == row['username'] and row['time'] <= 14:
+                contact = df_user.loc[index, 'contact']
+                for index, row in df_main.iterrows():
+                    if contact == row['username']:
+                        send_text(df_main.loc[index, 'phonenumber'])
+
 
 class WindowManager(ScreenManager):
-    pass
-
-class Invalid(FloatLayout):
-    pass
-
-class Success(FloatLayout):
-    pass
-
-class UserTaken(FloatLayout):
-    pass
-
-class NumInvalid(FloatLayout):
-    pass
-
-class PassMatch(FloatLayout):
-    pass
-
-class EmptyInput(FloatLayout):
-    pass
-
-class ConfirmPopup(GridLayout):
-	text = StringProperty()
-	
-	def __init__(self,**kwargs):
-		self.register_event_type('on_answer')
-		super(ConfirmPopup,self).__init__(**kwargs)
-		
-	def on_answer(self, *args):
-		pass
-    	
-class covidEval(FloatLayout):
     pass
 
 def show_invalid():
     """
     Pop-up shown if the login information is incorrect.
     """
-    show = Invalid()
-    popupWindow = Popup(title="Popup Window", content=show, size_hint=(None, None), size=(400,400))
-    popupWindow.open()
+    box = BoxLayout(orientation = 'vertical', padding = (10))
+    box.add_widget(Label(text = "The username you inputted either does \nnot exist in out database or the pass\n word you inputted is incorrect."))
+    btn1 = Button(text = "Ok")
+    box.add_widget(btn1)
+    popup = Popup(title="Invalid Login", title_size= (30), title_align = 'center', content = box,size_hint=(None, None), size=(430, 200), auto_dismiss = True)
+    btn1.bind(on_press = popup.dismiss)
+    popup.open()
 
 def show_success():
     """
     Pop-up shown if action successfully completed.
     """
-    show = Success()
-    popupWindow = Popup(title="Popup Window", content=show, size_hint=(None, None), size=(400,400))
-    popupWindow.open()
+    box = BoxLayout(orientation = 'vertical', padding = (10))
+    box.add_widget(Label(text = ""))
+    btn1 = Button(text = "Ok")
+    box.add_widget(btn1)
+    popup = Popup(title="Action Successful", title_size= (30), title_align = 'center', content = box,size_hint=(None, None), size=(430, 200), auto_dismiss = True)
+    btn1.bind(on_press = popup.dismiss)
+    popup.open()
 
 def user_taken():
     """
     Pop-up shown if the username inputted in the 
     create account window is already in use.
     """
-    show = UserTaken()
-    popupWindow = Popup(title="Popup Window", content=show, size_hint=(None, None), size=(400,400))
-    popupWindow.open()
+    box = BoxLayout(orientation = 'vertical', padding = (10))
+    box.add_widget(Label(text = "That username is already in use.\nPlease try another."))
+    btn1 = Button(text = "Ok")
+    box.add_widget(btn1)
+    popup = Popup(title="Username Error", title_size= (30), title_align = 'center', content = box,size_hint=(None, None), size=(430, 200), auto_dismiss = True)
+    btn1.bind(on_press = popup.dismiss)
+    popup.open()
 
 def num_invalid():
     """
     Pop-up shown if the number inputted in the 
     create account window is already in use.
     """
-    show = NumInvalid()
-    popupWindow = Popup(title="Popup Window", content=show, size_hint=(None, None), size=(400,400))
-    popupWindow.open()
+    box = BoxLayout(orientation = 'vertical', padding = (10))
+    box.add_widget(Label(text = "The phone number you inputted is either already in use or\nit is invalid. Do you already have an account?\nIf not please ensure the number inputted is correct."))
+    btn1 = Button(text = "Ok")
+    box.add_widget(btn1)
+    popup = Popup(title="Phone Number Input Invalid", title_size= (30), title_align = 'center', content = box,size_hint=(None, None), size=(430, 200), auto_dismiss = True)
+    btn1.bind(on_press = popup.dismiss)
+    popup.open()
 
 def pass_match():
     """
     Pop-up shown if the passwords inputted in the 
     create account window do not match.
     """
-    show = PassMatch()
-    popupWindow = Popup(title="Popup Window", content=show, size_hint=(None, None), size=(400,400))
-    popupWindow.open()
+    box = BoxLayout(orientation = 'vertical', padding = (10))
+    box.add_widget(Label(text = "The passwords inputted do not match.\nPlease ensure that they match."))
+    btn1 = Button(text = "Ok")
+    box.add_widget(btn1)
+    popup = Popup(title="Password Error", title_size= (30), title_align = 'center', content = box,size_hint=(None, None), size=(430, 200), auto_dismiss = True)
+    btn1.bind(on_press = popup.dismiss)
+    popup.open()
 
 def empty_input():
     """
     Pop-up shown if the passwords inputted in the 
     create account window do not match.
     """
-    show = EmptyInput()
-    popupWindow = Popup(title="Popup Window", content=show, size_hint=(None, None), size=(400,400))
-    popupWindow.open()
+    box = BoxLayout(orientation = 'vertical', padding = (10))
+    box.add_widget(Label(text = "You left required spaces blank. Please make\nsure to input a username, phone number, and\npassword."))
+    btn1 = Button(text = "Ok")
+    box.add_widget(btn1)
+    popup = Popup(title="Empty Input Error", title_size= (30), title_align = 'center', content = box,size_hint=(None, None), size=(430, 200), auto_dismiss = True)
+    btn1.bind(on_press = popup.dismiss)
+    popup.open()
 
 def show_covid_message():
     """
     Pop-up shown if the user clicks yes to any symptom to say they shoud get tested for covid
     """
-    show = covidEval()
-    popupWindow = Popup(title="Covid Notification", content=show, size_hint=(None, None), size=(400,400))
-    popupWindow.open()
+    box = BoxLayout(orientation = 'vertical', padding = (10))
+    box.add_widget(Label(text = "You should get tested for Covid-19"))
+    btn1 = Button(text = "Ok")
+    box.add_widget(btn1)
+    popup = Popup(title="Covid Notification", title_size= (30), title_align = 'center', content = box,size_hint=(None, None), size=(430, 200), auto_dismiss = True)
+    btn1.bind(on_press = popup.dismiss)
+    popup.open()
+
+def buttonClose(self):
+    self.popup.dismiss
 
 kv = Builder.load_file("mymain.kv")
 
@@ -221,27 +239,11 @@ def send_text(phoneNum):
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(
-        to="+12408559357",      # replace number with number from database
+        to="+1" + phoneNum,     # replace number with number from database
         from_="+14157994032",   # free trial number
         body="Someone you've been in contact with has contracted COVID-19. Please take the necessary health precautions to prevent the spread.")
 
     print(message.sid)
 
-def create_connection(db_file):
-    """ create a database connection to a SQLite database """
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-        print(sqlite3.version)
-    except Error as e:
-        print(e)
-    finally:
-        if conn:
-            conn.close()
-
 if __name__ == "__main__":
-    create_connection(r"C:\Users\chris\OneDrive\Desktop\sqlite\db\main.db")
-    create_connection(r"C:\Users\chris\OneDrive\Desktop\sqlite\db\user.db")
     MyMainApp().run()
-
-    # row = cursor.fetchone()
